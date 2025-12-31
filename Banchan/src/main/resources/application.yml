@@ -1,0 +1,72 @@
+spring:
+  application:
+    name: Banchan # 애플리케이션 이름 설정
+  
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver # MySQL JDBC 드라이버 클래스 이름
+    url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&serverTimezone=UTC # MySQL 데이터베이스 URL
+    username: ${MYSQL_ROOT_USER} # MySQL 데이터베이스 사용자 이름
+    password: ${MYSQL_ROOT_PASSWORD} # MySQL 데이터베이스 비밀번호
+
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true # SQL 쿼리를 콘솔에 출력
+        format_sql: true # SQL 쿼리를 읽기 쉽게 포맷팅
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO} # 애플리케이션 시작 시 데이터베이스 스키마 자동 생성
+    database-platform: org.hibernate.dialect.MySQLDialect # MySQL Dialect 설정
+
+  profiles:
+    active: oauth # 활성화할 Spring 프로파일 설정
+
+jwt:
+  secret: ${JWT_SECRET} # JWT 토큰 서명을 위한 비밀 키
+  expiration: ${JWT_EXPIRATION} # JWT 토큰 만료 시간 (밀리초 단위)
+
+spring.data.redis:
+  host: ${REDIS_HOST} # Redis 서버 호스트
+  port: ${REDIS_PORT} # Redis 서버 포트
+  password: ${REDIS_PASSWORD} # Redis 서버 비밀번호
+
+server:
+  port: ${SERVER_PORT} # 애플리케이션 서버 포트
+
+logging:
+  level:
+    root: INFO # 루트 로거 레벨 설정
+    org.springframework.security: INFO # Spring Security 로거 레벨 설정
+    org.springframework.web: INFO # Spring Web 로거 레벨 설정
+    org.hibernate: INFO # Hibernate 로거 레벨 설정
+
+# Swagger Configuration
+springdoc:
+  api-docs:
+    enabled: true # API 문서 생성 활성화
+  swagger-ui:
+    enabled: true # Swagger UI 활성화
+    path: /swagger-ui.html # Swagger UI 접근 경로 설정
+
+openvidu:
+  url: ${OPENVIDU_PUBLICURL}
+  secret: ${OPENVIDU_SECRET}
+
+file:
+  upload-dir: /app/uploads
+  record:
+    path: /opt/openvidu/recordings/
+
+chatgpt:
+  api-key: ${GPT_APIKEY}
+  model: ${GPT_MODEL}
+  max-token: 8196
+  temperature: 0.0
+  top-p: 1.0
+  media-type: application/json; charset=UTF-8
+  url: https://api.openai.com/v1/chat/completions

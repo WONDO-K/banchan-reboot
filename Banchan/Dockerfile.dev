@@ -1,0 +1,15 @@
+# 베이스 이미지 설정 (OpenJDK 17)
+FROM openjdk:17-jdk-slim
+
+# 빌드 타임 변수 설정
+ARG APP_HOME=/app
+ARG APP_JAR=Banchan-0.0.1-SNAPSHOT.jar
+ARG APP_TARGET=build/libs
+
+WORKDIR $APP_HOME
+
+# Gradle과 프로젝트 관련 파일들을 복사
+COPY build/libs/Banchan-0.0.1-SNAPSHOT.jar /app/build/libs/Banchan-0.0.1-SNAPSHOT.jar
+
+# 애플리케이션 실행 명령어 설정
+CMD ["java", "-jar", "build/libs/Banchan-0.0.1-SNAPSHOT.jar"]
