@@ -47,3 +47,6 @@ uploads/
 
 ### 녹화 파일
 recordings/
+
+### 환경 변수
+.env
