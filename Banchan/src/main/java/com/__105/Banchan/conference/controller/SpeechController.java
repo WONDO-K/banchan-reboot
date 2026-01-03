@@ -5,6 +5,7 @@ import com.__105.Banchan.conference.service.ChatGptService;
 import com.__105.Banchan.conference.service.OpenViduService;
 import com.__105.Banchan.conference.service.SpeechService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/speech")
+@Profile("prod")
 public class SpeechController {
 
     private final SpeechService speechService;

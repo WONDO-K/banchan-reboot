@@ -2,11 +2,11 @@ spring:
   application:
     name: Banchan # 애플리케이션 이름 설정
   
-  http:
-    encoding:
-      charset: UTF-8
-      enabled: true
-      force: true
+#  http:
+#    encoding:
+#      charset: UTF-8
+#      enabled: true
+#      force: true
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver # MySQL JDBC 드라이버 클래스 이름
@@ -70,3 +70,4 @@ chatgpt:
   top-p: 1.0
   media-type: application/json; charset=UTF-8
   url: https://api.openai.com/v1/chat/completions
+

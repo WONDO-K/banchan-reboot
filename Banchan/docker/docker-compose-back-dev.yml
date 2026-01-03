@@ -1,0 +1,61 @@
+version: "3.8"
+
+x-environment: &default
+  env_file:
+    - ../.env
+
+services:
+  banchan-back:
+    container_name: banchan-back-dev
+    build:
+      context: ../
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:8080"
+    <<: *default
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - mynetwork
+
+  mysql:
+    image: mysql:8.0
+    container_name: banchan-mysql-dev
+    ports:
+      - "3306:3306"
+    <<: *default
+    environment:
+      MYSQL_DATABASE: banchan
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mynetwork
+
+  redis:
+    image: redis:7
+    container_name: banchan-redis-dev
+    ports:
+      - "6379:6379"
+    networks:
+      - mynetwork
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  mynetwork:
+    driver: bridge

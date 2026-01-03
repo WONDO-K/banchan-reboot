@@ -142,7 +142,7 @@ public class AskServiceImpl implements AskService {
                 .orElseThrow(() -> new AskException(AskErrorCode.APARTMENT_NOT_FOUND))
                 .getApartment().getCode();
 
-        Specification<Ask> spec = Specification.where(null);
+        Specification<Ask> spec = Specification.where((Specification<Ask>) null);
         spec = spec.and(AskSpecification.whereApt(aptCode));
 
         if (user.getRole() != Role.ADMIN) {

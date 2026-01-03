@@ -194,7 +194,7 @@ public class NoticeServiceImpl implements NoticeService {
                 .orElseThrow(() -> new NoticeException(NoticeErrorCode.APARTMENT_NOT_FOUND))
                 .getApartment().getCode();
 
-        Specification<Notice> spec = Specification.where(null);
+        Specification<Notice> spec = Specification.where((Specification<Notice>) null);
         spec = spec.and(NoticeSpecification.whereApt(aptCode));
 
         if (requestDTO.getKeyword() != null && !requestDTO.getKeyword().isEmpty()) {

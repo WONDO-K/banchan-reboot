@@ -1,5 +1,5 @@
 # 베이스 이미지 설정 (OpenJDK 17)
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:21-jdk-jammy
 
 # 빌드 타임 변수 설정
 ARG APP_HOME=/app

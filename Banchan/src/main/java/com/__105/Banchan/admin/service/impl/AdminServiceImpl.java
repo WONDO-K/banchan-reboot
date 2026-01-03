@@ -14,7 +14,6 @@ import com.__105.Banchan.user.repository.UserRepository;
 import com.__105.Banchan.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.security.SecurityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;
@@ -33,7 +32,7 @@ public class AdminServiceImpl implements AdminService {
 
     private final UserRepository userRepository;
     private final UserAptRepository userAptRepository;
-    private final Logger log = LoggerFactory.getLogger(SecurityUtil.class);
+    private final Logger log = LoggerFactory.getLogger(AdminServiceImpl.class);
 
     @Override
     @Transactional(readOnly = true)
