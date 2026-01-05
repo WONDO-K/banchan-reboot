@@ -47,7 +47,7 @@ public class AdminServiceImpl implements AdminService {
         String aptCode = user.getUserApartments()
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Not Found User's Apt"))
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_APARTMENT_NOT_FOUND))
                 .getApartment().getCode();
 
         List<User> users = userRepository.findAllUserSameApt(aptCode);
