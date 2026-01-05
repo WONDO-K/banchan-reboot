@@ -1,7 +1,7 @@
 package com.__105.Banchan.ask.controller;
 
 import com.__105.Banchan.ask.dto.*;
-import com.__105.Banchan.ask.servie.AskService;
+import com.__105.Banchan.ask.service.AskService;
 import com.__105.Banchan.notice.dto.SearchCondition;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;

@@ -1,4 +1,4 @@
-package com.__105.Banchan.ask.servie;
+package com.__105.Banchan.ask.service;
 
 import com.__105.Banchan.ask.dto.*;
 import com.__105.Banchan.ask.entity.*;
