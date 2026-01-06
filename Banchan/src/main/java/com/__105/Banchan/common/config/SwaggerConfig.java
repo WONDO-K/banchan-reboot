@@ -23,7 +23,8 @@ import org.springframework.context.annotation.Configuration;
                 contact = @Contact(name = "201105", email = "your.email@example.com")
         ),
         servers = @Server(
-                url = "https://i11e105.p.ssafy.io", // 실제 배포된 URL로 변경 필요
+//                url = "https://i11e105.p.ssafy.io", // 실제 배포된 URL로 변경 필요
+                url = "http://localhost:8080",
                 description = "Default Server URL"
         )
 )

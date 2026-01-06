@@ -34,6 +34,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -74,6 +75,7 @@ public class AuthServiceImpl implements AuthService {
     private String clientSecret;
 
     @Override
+    @Transactional
     public ResponseEntity<StatusResponseDto> logout(String accessToken) {
         try {
             // 액세스 토큰을 블랙리스트에 추가
@@ -100,6 +102,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<TokenResponseStatus> refresh(String accessToken, String refreshToken) {
         try {
 //            // 액세스 토큰의 유효성 검사
@@ -141,6 +144,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ResponseEntity<Map<String, String>> originLogin(OriginLoginRequestDto loginRequestDto,HttpServletResponse response) {
         Optional<User> user = userRepository.findByEmail(loginRequestDto.getUserId());
 
@@ -223,6 +227,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public User kakaoRegisterOrLoginUser(String userEmail) {
         try {
             Optional<User> userOptional = userRepository.findByEmail(userEmail);
@@ -256,6 +261,7 @@ public class AuthServiceImpl implements AuthService {
     }
     // 쿠키에 리프레시 토큰 저장
     @Override
+    @Transactional
     public GeneratedToken handleKakaoLoginSuccess(String email, HttpServletResponse response) {
         User user = kakaoRegisterOrLoginUser(email);
         GeneratedToken token = jwtUtil.generateToken(user.getEmail(), user.getRole());
