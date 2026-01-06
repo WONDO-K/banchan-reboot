@@ -31,7 +31,8 @@ jwt:
   expiration: ${JWT_EXPIRATION} # JWT 토큰 만료 시간 (밀리초 단위)
 
 spring.data.redis:
-  host: ${REDIS_HOST} # Redis 서버 호스트
+#  host: ${REDIS_HOST} # Redis 서버 호스트
+  host : localhost
   port: ${REDIS_PORT} # Redis 서버 포트
   password: ${REDIS_PASSWORD} # Redis 서버 비밀번호
 

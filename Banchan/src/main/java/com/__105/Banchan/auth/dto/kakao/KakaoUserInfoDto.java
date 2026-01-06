@@ -1,8 +1,11 @@
 package com.__105.Banchan.auth.dto.kakao;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+// 소셜 로그인은 응답 필드가 자주 변경될 수 있으므로, 알 수 없는 속성은 무시하도록 설정
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 public class KakaoUserInfoDto {
 
