@@ -39,6 +39,15 @@ spring.data.redis:
 server:
   port: ${SERVER_PORT} # 애플리케이션 서버 포트
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+
 logging:
   level:
     root: INFO # 루트 로거 레벨 설정
