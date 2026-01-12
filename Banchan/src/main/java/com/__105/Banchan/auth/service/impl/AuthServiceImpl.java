@@ -81,8 +81,7 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = resolveAccessToken(request);
         if (accessToken == null) {
             log.error("로그아웃 요청에 유효한 액세스 토큰이 없습니다.");
-            return ResponseEntity.badRequest()
-                    .body(StatusResponseDto.addStatus(400, "유효한 액세스 토큰이 없습니다."));
+            throw new CustomException(ErrorCode.ACCESS_TOKEN_REQUIRED);
         }
 
         return logout(accessToken);
@@ -102,31 +101,31 @@ public class AuthServiceImpl implements AuthService {
             return ResponseEntity.ok(StatusResponseDto.addStatus(HttpStatus.OK.value(), "로그아웃이 성공적으로 처리되었습니다."));
 
         } catch (CustomException e) {
-            // CustomException 처리
             log.error("로그아웃 실패. 액세스 토큰: {}, 오류: {}", accessToken, e.getMessage());
-            return ResponseEntity.status(e.getErrorCode().getStatus())
-                    .body(StatusResponseDto.addStatus(e.getErrorCode().getStatus(), e.getErrorCode().getMessage()));
-
+            throw e;
         } catch (Exception e) {
-            // 그 외의 모든 예외 처리
             log.error("로그아웃 처리 중 예상치 못한 오류 발생. 액세스 토큰: {}, 오류: {}", accessToken, e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(StatusResponseDto.addStatus(HttpStatus.INTERNAL_SERVER_ERROR.value(), "로그아웃 처리 중 서버 오류가 발생했습니다."));
+            throw new CustomException(ErrorCode.LOGOUT_FAILED);
         }
     }
 
     @Override
     @Transactional
-    public ResponseEntity<TokenResponseStatus> refresh(HttpServletRequest request) { 
+    public ResponseEntity<TokenResponseStatus> refresh(HttpServletRequest request) {
         String accessToken = resolveAccessToken(request);
         String refreshToken = resolveRefreshToken(request);
 
         log.info("전달 받은 accessToken: " + accessToken);
         log.info("전달 받은 refreshToken: " + refreshToken);
 
-        if (accessToken == null || accessToken.trim().isEmpty() || refreshToken == null || refreshToken.trim().isEmpty()) {
-            log.error("Access Token or Refresh Token is missing");
-            return ResponseEntity.badRequest().body(new TokenResponseStatus(400, null));
+        if (accessToken == null || accessToken.trim().isEmpty()) {
+            log.error("Access Token is missing");
+            throw new CustomException(ErrorCode.ACCESS_TOKEN_REQUIRED);
+        }
+
+        if (refreshToken == null || refreshToken.trim().isEmpty()) {
+            log.error("Refresh Token is missing");
+            throw new CustomException(ErrorCode.REFRESH_TOKEN_REQUIRED);
         }
 
         return refresh(accessToken, refreshToken);
@@ -146,8 +145,7 @@ public class AuthServiceImpl implements AuthService {
             if (!jwtUtil.verifyToken(refreshToken)) {
                 // 리프레시 토큰이 만료된 경우, 새로운 액세스 및 리프레시 토큰 발급을 위해 재로그인 유도
                 log.warn("리프레시 토큰이 만료되었습니다. 액세스 토큰: {}, 리프레시 토큰: {}", accessToken, refreshToken);
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new TokenResponseStatus(ErrorCode.INVALID_REFRESH_TOKEN.getStatus(), null));
+                throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
             }
 
             // 리프레시 토큰 정보 조회
@@ -165,12 +163,13 @@ public class AuthServiceImpl implements AuthService {
 
             // 리프레시 토큰 정보가 없는 경우
             log.info("리프레시 토큰 정보를 찾을 수 없습니다.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new TokenResponseStatus(ErrorCode.REDIS_REFRESH_TOKEN_NOT_FOUND.getStatus(), null));
+            throw new CustomException(ErrorCode.REDIS_REFRESH_TOKEN_NOT_FOUND);
+        } catch (CustomException e) {
+            log.info("액세스 토큰 갱신 실패. 액세스 토큰: {}, 리프레시 토큰: {}, 오류: {}", accessToken, refreshToken, e.getMessage());
+            throw e;
         } catch (Exception e) {
             log.info("액세스 토큰 갱신 실패. 액세스 토큰: {}, 리프레시 토큰: {}, 오류: {}", accessToken, refreshToken, e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new TokenResponseStatus(ErrorCode.INTERNAL_SERVER_ERROR.getStatus(), null));
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -255,6 +254,27 @@ public class AuthServiceImpl implements AuthService {
             log.error("카카오 사용자 정보를 가져오는 데 실패했습니다.");
             throw new CustomException(ErrorCode.KAKAO_USER_INFO_NOT_FOUND);
         }
+    }
+
+    @Override
+    // /kakao/login 요청: 카카오 로그인 처리 및 액세스 토큰 반환
+    public ResponseEntity<Map<String, String>> kakaoLogin(String code, HttpServletResponse response) {
+        KakaoUserInfoDto kakaoUserInfoDto = requestAccessTokenAndUserInfo(code);
+
+        if (kakaoUserInfoDto == null || kakaoUserInfoDto.getKakaoAccount() == null
+                || kakaoUserInfoDto.getKakaoAccount().getEmail() == null) {
+            log.error("카카오 사용자 정보를 가져오는 데 실패했습니다.");
+            throw new CustomException(ErrorCode.KAKAO_USER_INFO_NOT_FOUND);
+        }
+
+        GeneratedToken token = handleKakaoLoginSuccess(
+                kakaoUserInfoDto.getKakaoAccount().getEmail(),
+                response
+        );
+
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("accessToken", token.getAccessToken());
+        return ResponseEntity.ok(responseBody);
     }
 
     @Override

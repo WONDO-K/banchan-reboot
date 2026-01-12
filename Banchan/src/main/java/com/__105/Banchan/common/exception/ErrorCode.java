@@ -32,6 +32,9 @@ public enum ErrorCode {
 
     // 인증 권한 관련 에러 코드
     USER_NOT_AUTHORIZED(403, "A001", "사용자가 권한이 없습니다."),
+    ACCESS_TOKEN_REQUIRED(400, "A002", "액세스 토큰이 필요합니다."),
+    REFRESH_TOKEN_REQUIRED(400, "A003", "리프레시 토큰이 필요합니다."),
+    INVALID_JWT(401, "A004", "JWT 토큰이 유효하지 않습니다."),
 
     // 아파트 관련 에러코드
     USER_APARTMENT_NOT_FOUND(404, "AP001", "유저의 아파트 정보를 찾을 수 없습니다."),

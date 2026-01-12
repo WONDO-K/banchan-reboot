@@ -24,6 +24,8 @@ public interface AuthService {
     // 내부 호출용: 액세스/리프레시 토큰이 이미 추출된 경우 사용
     ResponseEntity<TokenResponseStatus> refresh(String accessToken, String refreshToken);
     ResponseEntity<Map<String, String>> originLogin(OriginLoginRequestDto loginRequestDto,HttpServletResponse response);
+    // /kakao/login 요청: 카카오 로그인 처리 및 액세스 토큰 반환
+    ResponseEntity<Map<String, String>> kakaoLogin(String code, HttpServletResponse response);
     KakaoUserInfoDto requestAccessTokenAndUserInfo(String code);
     GeneratedToken handleKakaoLoginSuccess(String email, HttpServletResponse response);
     User kakaoRegisterOrLoginUser(String userEmail);

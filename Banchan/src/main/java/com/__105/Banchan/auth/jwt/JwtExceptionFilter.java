@@ -2,6 +2,7 @@ package com.__105.Banchan.auth.jwt;
 
 import com.__105.Banchan.auth.dto.StatusResponseDto;
 import com.__105.Banchan.auth.exception.JwtException;
+import com.__105.Banchan.common.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -30,7 +31,10 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             response.setCharacterEncoding("UTF-8");
 
             // 상태 코드와 메시지를 포함한 응답 반환
-            StatusResponseDto errorResponse = StatusResponseDto.addStatus(HttpServletResponse.SC_UNAUTHORIZED, "JWT 토큰이 유효하지 않습니다.");
+            StatusResponseDto errorResponse = StatusResponseDto.addStatus(
+                    ErrorCode.INVALID_JWT.getStatus(),
+                    ErrorCode.INVALID_JWT.getMessage()
+            );
             objectMapper.writeValue(response.getWriter(), errorResponse);
         }
     }
