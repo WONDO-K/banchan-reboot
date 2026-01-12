@@ -10,6 +10,7 @@ import com.__105.Banchan.redis.service.OtpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -28,6 +29,52 @@ public class OtpServiceImpl implements OtpService {
     private OtpRepository otpRepository;
 
     @Override
+    // /otp/validate 요청을 처리하며 입력값 검증과 오류 응답 매핑을 포함
+    public ResponseEntity<OtpResponseDto> validateOtp(OtpValidateRequestDto requestDto) {
+        String phoneNumber = requestDto.getPhoneNumber();
+        String otp = requestDto.getOtp();
+
+        log.info("OTP 검증 요청 수신: 전화번호 {}", phoneNumber);
+
+        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+            log.warn("OTP 검증 실패: 전화번호가 제공되지 않음");
+            return ResponseEntity.badRequest()
+                    .body(new OtpResponseDto(false, ErrorCode.PHONE_NUMBER_REQUIRED.getMessage()));
+        }
+
+        if (otp == null || otp.trim().isEmpty()) {
+            log.warn("OTP 검증 실패: OTP가 제공되지 않음");
+            return ResponseEntity.badRequest()
+                    .body(new OtpResponseDto(false, ErrorCode.OTP_REQUIRED.getMessage()));
+        }
+
+        OtpResponseDto responseDto = validateOtpInternal(requestDto, otp);
+
+        if (!responseDto.isSuccess()) {
+            if (responseDto.getMessage().equals(ErrorCode.OTP_EXPIRED.getMessage())) {
+                log.info("OTP 검증 실패: 전화번호 {}의 OTP가 만료됨", phoneNumber);
+                return ResponseEntity.status(ErrorCode.OTP_EXPIRED.getStatus())
+                        .body(responseDto);
+            } else if (responseDto.getMessage().equals(ErrorCode.MAX_OTP_ATTEMPTS_EXCEEDED.getMessage())) {
+                log.info("OTP 검증 실패: 전화번호 {}의 시도 횟수 초과", phoneNumber);
+                return ResponseEntity.status(ErrorCode.MAX_OTP_ATTEMPTS_EXCEEDED.getStatus())
+                        .body(responseDto);
+            } else if (responseDto.getMessage().equals(ErrorCode.INVALID_OTP.getMessage())) {
+                log.info("OTP 검증 실패: 전화번호 {}에 대한 잘못된 OTP", phoneNumber);
+                return ResponseEntity.status(ErrorCode.INVALID_OTP.getStatus())
+                        .body(responseDto);
+            } else {
+                log.error("OTP 검증 중 알 수 없는 오류 발생: 전화번호 {}", phoneNumber);
+                return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus())
+                        .body(new OtpResponseDto(false, ErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
+            }
+        }
+
+        log.info("OTP 검증 성공: 전화번호 {}", phoneNumber);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @Override
     public OtpCreateResponseDto generateOtp(OtpRequestDto requestDto) {
         String phoneNumber = requestDto.getPhoneNumber();
         String otp = generateRandomOtp();
@@ -43,8 +90,7 @@ public class OtpServiceImpl implements OtpService {
         return new OtpCreateResponseDto(true, "OTP generated successfully.",otp);
     }
 
-    @Override
-    public OtpResponseDto validateOtp(OtpValidateRequestDto requestDto, String otp) {
+    private OtpResponseDto validateOtpInternal(OtpValidateRequestDto requestDto, String otp) {
         String phoneNumber = requestDto.getPhoneNumber();
 
         log.info("전화번호 {}에 대한 OTP 검증 요청 수신", phoneNumber);

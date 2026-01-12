@@ -21,6 +21,7 @@ import com.__105.Banchan.util.GenerateRandomPassword;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -76,6 +77,19 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
+    public ResponseEntity<StatusResponseDto> logout(HttpServletRequest request) {
+        String accessToken = resolveAccessToken(request);
+        if (accessToken == null) {
+            log.error("로그아웃 요청에 유효한 액세스 토큰이 없습니다.");
+            return ResponseEntity.badRequest()
+                    .body(StatusResponseDto.addStatus(400, "유효한 액세스 토큰이 없습니다."));
+        }
+
+        return logout(accessToken);
+    }
+
+    @Override
+    @Transactional
     public ResponseEntity<StatusResponseDto> logout(String accessToken) {
         try {
             // 액세스 토큰을 블랙리스트에 추가
@@ -103,7 +117,24 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public ResponseEntity<TokenResponseStatus> refresh(String accessToken, String refreshToken) {
+    public ResponseEntity<TokenResponseStatus> refresh(HttpServletRequest request) { 
+        String accessToken = resolveAccessToken(request);
+        String refreshToken = resolveRefreshToken(request);
+
+        log.info("전달 받은 accessToken: " + accessToken);
+        log.info("전달 받은 refreshToken: " + refreshToken);
+
+        if (accessToken == null || accessToken.trim().isEmpty() || refreshToken == null || refreshToken.trim().isEmpty()) {
+            log.error("Access Token or Refresh Token is missing");
+            return ResponseEntity.badRequest().body(new TokenResponseStatus(400, null));
+        }
+
+        return refresh(accessToken, refreshToken);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<TokenResponseStatus> refresh(String accessToken, String refreshToken) { 
         try {
 //            // 액세스 토큰의 유효성 검사
 //            if (!jwtUtil.verifyToken(accessToken)) {
@@ -309,6 +340,27 @@ public class AuthServiceImpl implements AuthService {
             log.error("카카오 사용자 정보 요청 실패", e);
             throw new CustomException(ErrorCode.KAKAO_USER_INFO_REQUEST_FAILED);
         }
+    }
+
+    private String resolveAccessToken(HttpServletRequest request) {
+        String accessTokenHeader = request.getHeader("Authorization");
+        if (accessTokenHeader != null && accessTokenHeader.startsWith("Bearer ")) {
+            return accessTokenHeader.substring(7);
+        }
+        return null;
+    }
+
+    private String resolveRefreshToken(HttpServletRequest request) {
+        if (request.getCookies() == null) {
+            return null;
+        }
+
+        for (var cookie : request.getCookies()) {
+            if ("refreshToken".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 
 }

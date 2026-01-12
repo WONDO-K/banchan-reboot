@@ -13,7 +13,6 @@ import com.__105.Banchan.auth.dto.otp.OtpValidateRequestDto;
 import com.__105.Banchan.auth.jwt.GeneratedToken;
 import com.__105.Banchan.auth.service.AuthService;
 
-import com.__105.Banchan.common.exception.ErrorCode;
 import com.__105.Banchan.redis.service.OtpService;
 import com.__105.Banchan.user.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,58 +52,14 @@ public class AuthController {
     @PostMapping("/token/logout")
     @Operation(summary = "로그아웃", description = "로그아웃 처리 및 토큰 삭제")
     public ResponseEntity<StatusResponseDto> logout(HttpServletRequest request) {
-        // HTTP 요청에서 액세스 토큰 헤더를 추출
-        String accessTokenHeader = request.getHeader("Authorization");
-
-        // 액세스 토큰이 없으면 오류 반환
-        if (accessTokenHeader == null || !accessTokenHeader.startsWith("Bearer ")) {
-            log.error("로그아웃 요청에 유효한 액세스 토큰이 없습니다.");
-            return ResponseEntity.badRequest()
-                    .body(StatusResponseDto.addStatus(400, "유효한 액세스 토큰이 없습니다."));
-        }
-        // 'Bearer ' 접두사 제거
-        String accessToken = accessTokenHeader.substring(7);
-
-        // 로그아웃 처리: 액세스 토큰을 블랙리스트에 추가하고, 연관된 리프레시 토큰 삭제
-        return authService.logout(accessToken);
+        return authService.logout(request);
     }
 
 
     @PostMapping("/token/refresh")
     @Operation(summary = "토큰 갱신", description = "액세스 토큰을 갱신")
     public ResponseEntity<TokenResponseStatus> refresh(HttpServletRequest request) {
-
-        // Authorization 헤더에서 액세스 토큰 추출
-        String accessTokenHeader = request.getHeader("Authorization");
-        String accessToken = null;
-
-        log.info("전달 받은 accessToken: " + accessTokenHeader);
-
-        if (accessTokenHeader != null && accessTokenHeader.startsWith("Bearer ")) {
-            accessToken = accessTokenHeader.substring(7);
-        }
-
-        // 쿠키에서 리프레시 토큰 추출
-        String refreshToken = null;
-        if (request.getCookies() != null) {
-            for (var cookie : request.getCookies()) {
-                if ("refreshToken".equals(cookie.getName())) {
-                    refreshToken = cookie.getValue();
-                    break;
-                }
-            }
-        }
-
-        log.info("전달 받은 refreshToken: " + refreshToken);
-
-        // refreshToken이 없거나 accessToken이 없으면 오류 반환
-        if (accessToken == null || accessToken.trim().isEmpty() || refreshToken == null || refreshToken.trim().isEmpty()) {
-            log.error("Access Token or Refresh Token is missing");
-            return ResponseEntity.badRequest().body(new TokenResponseStatus(400, null));
-        }
-
-        // 토큰 갱신 서비스 호출
-        return authService.refresh(accessToken, refreshToken);
+        return authService.refresh(request);
     }
 
     @GetMapping("/kakao/login")
@@ -142,47 +97,6 @@ public class AuthController {
     @PostMapping("/otp/validate")
     @Operation(summary = "OTP 검증", description = "사용자가 입력한 OTP를 검증")
     public ResponseEntity<OtpResponseDto> validateOtp(@RequestBody OtpValidateRequestDto requestDto) {
-        String phoneNumber = requestDto.getPhoneNumber();
-        String otp = requestDto.getOtp();
-
-        log.info("OTP 검증 요청 수신: 전화번호 {}", phoneNumber);
-
-        // phoneNumber와 otp가 null이거나 빈 문자열일 경우, 오류 응답 반환
-        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
-            log.warn("OTP 검증 실패: 전화번호가 제공되지 않음");
-            return ResponseEntity.badRequest().body(new OtpResponseDto(false, ErrorCode.PHONE_NUMBER_REQUIRED.getMessage()));
-        }
-
-        if (otp == null || otp.trim().isEmpty()) {
-            log.warn("OTP 검증 실패: OTP가 제공되지 않음");
-            return ResponseEntity.badRequest().body(new OtpResponseDto(false, ErrorCode.OTP_REQUIRED.getMessage()));
-        }
-
-        // OTP 검증 처리
-        OtpResponseDto responseDto = otpService.validateOtp(requestDto, otp);
-
-        // 검증 결과에 따른 오류 응답 처리
-        if (!responseDto.isSuccess()) {
-            if (responseDto.getMessage().equals(ErrorCode.OTP_EXPIRED.getMessage())) {
-                log.info("OTP 검증 실패: 전화번호 {}의 OTP가 만료됨", phoneNumber);
-                return ResponseEntity.status(ErrorCode.OTP_EXPIRED.getStatus())
-                        .body(responseDto);
-            } else if (responseDto.getMessage().equals(ErrorCode.MAX_OTP_ATTEMPTS_EXCEEDED.getMessage())) {
-                log.info("OTP 검증 실패: 전화번호 {}의 시도 횟수 초과", phoneNumber);
-                return ResponseEntity.status(ErrorCode.MAX_OTP_ATTEMPTS_EXCEEDED.getStatus())
-                        .body(responseDto);
-            } else if (responseDto.getMessage().equals(ErrorCode.INVALID_OTP.getMessage())) {
-                log.info("OTP 검증 실패: 전화번호 {}에 대한 잘못된 OTP", phoneNumber);
-                return ResponseEntity.status(ErrorCode.INVALID_OTP.getStatus())
-                        .body(responseDto);
-            } else {
-                log.error("OTP 검증 중 알 수 없는 오류 발생: 전화번호 {}", phoneNumber);
-                return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus())
-                        .body(new OtpResponseDto(false, ErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
-            }
-        }
-
-        log.info("OTP 검증 성공: 전화번호 {}", phoneNumber);
-        return ResponseEntity.ok(responseDto);
+        return otpService.validateOtp(requestDto);
     }
 }
