@@ -15,6 +15,8 @@ services:
       MYSQL_ROOT_PASSWORD: root
     volumes:
       - ./mysql_data:/var/lib/mysql
+      # Seed data on first initialization only
+      - ../exec/dumpdata/data.sql:/docker-entrypoint-initdb.d/data.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -proot"]
       interval: 10s
