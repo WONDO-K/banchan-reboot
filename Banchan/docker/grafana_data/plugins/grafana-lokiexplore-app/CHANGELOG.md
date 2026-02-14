@@ -1,5 +1,74 @@
 # Changelog
 
+## 1.0.35
+
+##### Chores
+
+* **cve:**  tar, remix, node 24 (#1736) (afd1ac99)
+*  add memberlist store and per request limits (#1648) (2812f4cb)
+* **deps:**
+  *  update dependency @lezer/lr to v1.4.8 (#1725) (10a424e5)
+  *  update dependency @types/node to v20.19.30 (#1726) (622bfd57)
+  *  update dependency terser-webpack-plugin to v5.3.16 (#1727) (b3c1c914)
+  *  update grafana/shared-workflows/create-github-app-token action to v0.2.2 (#1728) (bbe62f04)
+  *  update actions/cache action to v4.3.0 (#1732) (938f0a41)
+  *  update actions/checkout action to v4.3.1 (#1733) (e6bcfab8)
+  *  update actions/setup-node action to v4.4.0 (#1734) (81cfcbce)
+* **feature flags:**  add openfeature flags (#1711) (10a8cc4c)
+
+##### New Features
+
+* **config:**  wrap default columns in error boundary (#1735) (c004f683)
+* **SaveSearch:**  Add support to save filters (or queries) to local storage or to Saved Queries if available (#1702) (c3003ed0)
+
+##### Bug Fixes
+
+*  set correct datasource when embedding log drilldown component (#1737) (9ed21863)
+* **deps:**
+  *  update dependency @gtk-grafana/react-json-tree to ^0.0.13 (#1729) (50597cf1)
+  *  update module github.com/spf13/pflag to v1.0.10 (#1731) (b7f486f8)
+  *  update grafana packages (#1730) (3f2f2e96)
+* **LoadSearchScene:**  pass context to exposed component (#1724) (08b14163)
+* **assistant:**  add `instructions` for structured metadata for Assistant (#1723) (23f45935)
+
+
+## 1.0.34
+
+##### Chores
+
+* **cp:**  update create-plugin (#1716) (b66d9a4b)
+* **default-columns:**
+  *  fix version gate (#1710) (47d2c4dd)
+  *  Tracking events (#1700) (d02be463)
+  *  upgrade API from alpha to beta (#1698) (093ea429)
+* **version:**  match grafana version to the playwright matrix version (#1701) (ed0883c2)
+* **deps:**  add lint-staged as dep (#1697) (97b2f321)
+*  remove investigations (#1690) (0452541f)
+
+##### Documentation Changes
+
+*  Second attempt to fix shared content (#1719) (5c5cf885)
+*  remove version (#1717) (44bf000d)
+*  Update troubleshooting topic (#1714) (40355e79)
+
+##### New Features
+
+*  App config default columns (#1664) (28b4ca93)
+
+##### Bug Fixes
+
+* **links:**  upgrade to clipboard.write for ios/safari (#1707) (948229a9)
+* **table:**  Improve table size container and fix resize behavior with docked Mega Menu (#1695) (80114e8e)
+
+##### Other Changes
+
+* enterprise (#1708) (fd352740)
+
+##### Tests
+
+*  App config default columns  (#1686) (3b54605e)
+
+
 ## 1.0.33
 
 ##### Chores

@@ -37,8 +37,8 @@
                 "path": "img/table.png"
             }
         ],
-        "version": "1.0.33",
-        "updated": "2026-01-06",
+        "version": "1.0.35",
+        "updated": "2026-02-04",
         "links": [
             {
                 "name": "Github",
@@ -69,7 +69,8 @@
                 "grafana-adaptivelogs-app/temporary-exemptions/v1",
                 "grafana-lokiexplore-app/embedded-logs-exploration/v1",
                 "grafana-asserts-app/insights-timeline-widget/v1",
-                "grafana/add-to-dashboard-form/v1"
+                "grafana/add-to-dashboard-form/v1",
+                "grafana/query-library-context/v1"
             ]
         }
     },
@@ -115,11 +116,6 @@
                 "id": "grafana-lokiexplore-app/embedded-logs-exploration/v1",
                 "title": "Embedded Logs Exploration",
                 "description": "A component that renders a logs exploration view that can be embedded in other parts of Grafana."
-            }
-        ],
-        "extensionPoints": [
-            {
-                "id": "grafana-lokiexplore-app/investigation/v1"
             }
         ]
     },

@@ -8,12 +8,17 @@
         "plugins": [],
         "extensions": {
             "exposedComponents": [
-                "grafana/add-to-dashboard-form/v1"
+                "grafana/add-to-dashboard-form/v1",
+                "grafana/alerting/create-alert-from-panel/v1",
+                "grafana/prometheus-query-results/v1"
             ]
         }
     },
     "preload": true,
     "autoEnabled": true,
+    "languages": [
+        "en-US"
+    ],
     "info": {
         "keywords": [
             "drilldown",
@@ -40,8 +45,8 @@
                 "path": "img/breakdown.png"
             }
         ],
-        "version": "1.0.27",
-        "updated": "2026-01-06",
+        "version": "1.0.30",
+        "updated": "2026-02-11",
         "links": [
             {
                 "name": "GitHub",
@@ -93,9 +98,6 @@
         ],
         "extensionPoints": [
             {
-                "id": "grafana-exploremetrics-app/investigation/v1"
-            },
-            {
                 "id": "grafana-metricsdrilldown-app/open-in-logs-drilldown/v1"
             }
         ],
@@ -109,6 +111,11 @@
                 "id": "grafana-metricsdrilldown-app/knowledge-graph-insight-metrics/v1",
                 "title": "Knowledge Graph Source Metrics",
                 "description": "Explore the underlying metrics related to a Knowledge Graph insight"
+            },
+            {
+                "id": "grafana-metricsdrilldown-app/mini-breakdown-component/v1",
+                "title": "Mini Label Breakdown Navigation",
+                "description": "A mini metrics label breakdown view from the Metrics Drilldown app used for navigation."
             }
         ]
     },

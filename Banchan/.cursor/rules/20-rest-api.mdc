@@ -1,0 +1,6 @@
+# REST API 규칙
+
+- RESTful API 원칙을 따른다.
+- Controller는 비즈니스 로직을 포함하지 않는다.
+- 요청 DTO와 응답 DTO를 명확히 분리한다.
+- HTTP Status Code의 의미를 지킨다.

@@ -40,8 +40,8 @@
                 "path": "img/hero-image.png"
             }
         ],
-        "version": "1.14.2",
-        "updated": "2025-12-18",
+        "version": "1.16.0",
+        "updated": "2026-01-28",
         "links": [
             {
                 "name": "GitHub",
@@ -73,9 +73,6 @@
         ],
         "extensionPoints": [
             {
-                "id": "grafana-pyroscope-app/investigation/v1"
-            },
-            {
                 "id": "grafana-pyroscope-app/settings/v1"
             }
         ],
@@ -91,5 +88,18 @@
             }
         ]
     },
+    "routes": [
+        {
+            "path": "/grafanacom-api/instances",
+            "method": "GET",
+            "url": "{{.SecureJsonData.gcomApiUrl}}/instances/{{.SecureJsonData.stackId}}",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "content": "Bearer {{.SecureJsonData.gcomApiToken}}"
+                }
+            ]
+        }
+    ],
     "buildMode": "production"
 }
